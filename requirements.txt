@@ -1,7 +1,6 @@
 PyYAML==3.11
 SQLAlchemy==0.9.7
 argh==0.25.0
-chardet==2.2.1
-mutagen==1.23
+mutagenx==1.24
 pathtools==0.1.2
 watchdog==0.8.1
