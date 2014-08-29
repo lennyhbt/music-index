@@ -83,7 +83,6 @@ metadata = mutagenx.File('/home/lenny/音乐/The_Band_Perry_If_I_Die_Young.flac'
 class MusicFile(object):
     def __init__(self, name):
         self.metadata = mutagenx.File(name)
-        self.tags = self.metadata.tags
 
     def get_filetype(self):
         pass
