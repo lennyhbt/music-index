@@ -21,7 +21,7 @@ class FileInfo(object):
 def scan_dirs(d, op):
     for root, dirs, files in os.walk(d):
         for f in files:
-            op(FileInfo(f))
+            op(FileInfo(os.path.join(root,f)))
 
 if __name__ == '__main__':
     def print_op(f):
