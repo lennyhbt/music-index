@@ -31,8 +31,5 @@ if __name__ == '__main__':
         print('\tfilename:{0}'.format(f.filename))
         print('\tsuffix:{0}'.format(f.suffix))
         print('\tmimetype:{0}'.format(f.mimetype))
-    import sys
-    if len(sys.argv) > 1:
-        scan_dirs(sys.argv[1], print_op)
-    else:
-        scan_dirs('./', print_op)
+    import os
+    scan_dirs(os.getcwd(), print_op)
