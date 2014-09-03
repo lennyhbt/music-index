@@ -24,14 +24,47 @@ class FileList(DBase):
     def __repr__(self):
         return "<file(uri='{0}', path='{1}')>".format(self.uri, self.path)
 
+class Artist(DBase):
+    __tablename__ = 'artist'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+
 class Album(DBase):
     __tablename__ = 'album'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
+    artist = Column(String)
 
     def __repr__(self):
         return '<Album(name={0})>'.format(self.name)
+
+class Song(DBase):
+    __tablename__ = 'song'
+
+    id = Column(Integer, primary_key=True)
+    fname = Column(String)
+    name = Column(String)
+    artist = Column(Integer)
+    album = Column(Integer)
+
+class Refer(DBase):
+    __tablename__ = 'relate'
+
+    id = Column(Integer, primary_key=True)
+    fileid = Column(Integer)
+    songid = Column(Integer)
+    artistid = Column(Integer)
+    albumid = Column(Integer)
+
+class TagRefer(DBase):
+    __tablename__ = 'tagrel'
+
+    id = Column(Integer, primary_key=True)
+    cid = Column(Integer)
+    ctype = Column(Integer)
+    tag = Column(String)
 
 if __name__ == '__main__':
     import os
