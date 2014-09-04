@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+"""
+    musicindex.config
+    ~~~~~~~~~~~~~~~~~~~
+
+    This module offer config interface for music index.
+
+    :copyright: (c) 2014 by Lenny.
+    :license: LGPL, see LICENSE for more details.
+"""
+
 import configparser
 
 config = configparser.ConfigParser()

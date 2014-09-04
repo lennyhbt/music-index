@@ -1,9 +1,21 @@
+# -*- coding: utf-8 -*-
+"""
+    musicindex.fs
+    ~~~~~~~~~~~~~~~~~~~
+
+    This module scan dir and parse fileinfo.
+
+    :copyright: (c) 2014 by Lenny.
+    :license: LGPL, see LICENSE for more details.
+"""
+
 import os
 import mimetypes
 
 mimetypes.init()
 
 class FileInfo(object):
+    '''file info contaions file's path and mimetype info.'''
     # all allowed attributes
     __slots__ = ('uri', 'fullname', 'basedir', 'filename', 'suffix', 'mimetype')
     def __init__(self, fname):
@@ -18,10 +30,11 @@ class FileInfo(object):
         self.mimetype = mimetypes.guess_type(self.uri, strict=False)[0]
 
 
-def scan_dirs(d, op):
-    for root, dirs, files in os.walk(d):
+def scan_dirs(path, opfunc):
+    '''scan a dir path and do opfunc for every file in the dir.'''
+    for root, dirs, files in os.walk(path):
         for f in files:
-            op(FileInfo(os.path.join(root,f)))
+            opfunc(FileInfo(os.path.join(root,f)))
 
 if __name__ == '__main__':
     def print_op(f):
