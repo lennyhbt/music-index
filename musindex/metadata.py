@@ -97,14 +97,16 @@ class MusicFile(object):
         elif 'mp4' in self.metadata.mime[0]:
             pass
 
-    apetag = {'title':'Title', 'artist':'Artist', 'album':'Album', 'year':'Year', 'genre':'Catalog'}
-    flactag = {'title':'title', 'artist':'artist', 'album':'album', 'year':'year', 'genre':'genre'}
-    mp3tag = {'title':'Title', 'artist':'Artist', 'album':'Album', 'year':'Year', 'genre':'Genre'}
-        self.title = self.metadata.get('title', 'Unknown')
-        self.artist = self.metadata.get('artist', 'Unknown')
-        self.album = self.metadata.get('album', 'Unkonwn')
+        self.title = self.metadata.get('title')
+        self.artist = self.metadata.get('artist')
+        self.album = self.metadata.get('album')
         self.genre = self.metadata.get('genre')
         self.year = self.metadata.get('year')
+
+        if self.title is None:
+            self.title = self.metadata.get('')
+        if self.genre is None:
+            self.genre = self.metadata.get('catalog')
 
 
 
