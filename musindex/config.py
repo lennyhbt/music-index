@@ -9,17 +9,33 @@
     :license: LGPL, see LICENSE for more details.
 """
 
+import os
 import configparser
 
-config = configparser.ConfigParser()
-config['Default'] = {'test':123,'test2':'456'}
-config['fs'] = {'dir':'~/music'}
+def get_config(section, item, typ):
+    '''get a config item according to config[section][item] and value type.'''
+    config = configparser.ConfigParser()
+    config.read('musindex.conf')
+    ret = None
+    if typ == 'int':
+        ret = config[section].getInt(item)
+    elif typ == 'float':
+        ret = config[section].getfloat(item)
+    elif typ == 'bool':
+        ret = config[section].getboolean(item)
+    else:
+        ret = config[section].get(item)
+    return ret
 
-import os
-with open(os.path.join(os.getcwd(), 'musindex.conf'), 'w') as f:
-    config.write(f)
+def set_config(section, item, val):
+    '''set a config item according to config[section][item] and value.'''
+    config = configparser.ConfigParser()
+    config.read('musindex.conf')
+    config[section][item] = val
 
-config.read('musindex.conf')
-#config['bitbucket.org'].getboolean('ForwardX11')
-#config.sections()
+    with open(os.path.join(os.getcwd(), 'musindex.conf'), 'w') as conf:
+        config.write(conf)
+
+def set_defconfig():
+    pass
 
