@@ -14,15 +14,27 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-#engine = create_engine('sqlite:///:memory:', echo=False)
 import os
-engine = create_engine('sqlite:///{0}/musindex.db'.format(os.getcwd()), echo=False)
-Session = sessionmaker(bind=engine)
 
-DBase = declarative_base()
-DBase.metadata.create_all(engine)
+from musindex import config
 
-class MusicFile(DBase):
+DB_CONN = config.get_config('db_conn')
+
+if DB_CONN is None or DB_CONN == '':
+    DB_CONN = 'sqlite:///:memory:'
+ENGINE = create_engine(DB_CONN, echo=False)
+SESSION = sessionmaker(bind=ENGINE)
+DBASE = declarative_base()
+DBASE.metadata.create_all(ENGINE)
+
+class RepoInfo(DBASE):
+    __tablename__ = 'repoinfo'
+
+    id = Column(Integer, primary_key=True)
+    path = Column(String)
+    timestamp = Column(Integer)
+
+class MusicFile(DBASE):
     __tablename__ = 'musicfile'
 
     id = Column(Integer, primary_key=True)
@@ -37,7 +49,7 @@ class MusicFile(DBase):
     def __repr__(self):
         return "<file(uri='{0}', path='{1}')>".format(self.uri, self.path)
 
-class Artist(DBase):
+class Artist(DBASE):
     __tablename__ = 'artist'
 
     id = Column(Integer, primary_key=True)
@@ -46,7 +58,7 @@ class Artist(DBase):
     def __repr__(self):
         return '<Artist(name={0})>'.format(self.name)
 
-class Album(DBase):
+class Album(DBASE):
     __tablename__ = 'album'
 
     id = Column(Integer, primary_key=True)
@@ -55,7 +67,7 @@ class Album(DBase):
     def __repr__(self):
         return '<Album(name={0})>'.format(self.name)
 
-class Song(DBase):
+class Song(DBASE):
     __tablename__ = 'song'
 
     id = Column(Integer, primary_key=True)
@@ -66,7 +78,7 @@ class Song(DBase):
     def __repr__(self):
         return '<Song(name={0})>'.format(self.name)
 
-class MsuicRefer(DBase):
+class MsuicRefer(DBASE):
     '''relation between file,song,artist and album'''
     __tablename__ = 'relate'
 
@@ -80,7 +92,7 @@ class MsuicRefer(DBase):
         return '<MusicRefer(fileid={0},songid={1},artistid={2},albumid={3})>'.format(
             self.fileid, self.songid, self.artistid, self.artistid)
 
-class TagRefer(DBase):
+class TagRefer(DBASE):
     '''relation between a music object and a tag.'''
     __tablename__ = 'tagrel'
 
@@ -103,16 +115,17 @@ class TagRefer(DBase):
 if __name__ == '__main__':
     import os
     import fs
-    DBase.metadata.create_all(engine)
-    s = Session()
+    DBASE.metadata.create_all(ENGINE)
+    s = SESSION()
 
     def save_db(f):
-        finfo = FileList(uri=f.uri, path=f.fullname, basedir=f.basedir, filename=f.filename, suffix=f.suffix, mimetype=f.mimetype)
+        finfo = MusicFile(uri=f.uri, path=f.fullname, basedir=f.basedir,
+                         filename=f.filename, suffix=f.suffix, mimetype=f.mimetype)
         s.add(finfo)
     fs.scan_dirs(os.getcwd(), save_db)
     s.commit()
 
     print('files:\n')
-    for f in s.query(FileList).order_by(FileList.uri):
+    for f in s.query(MusicFile).order_by(MusicFile.uri):
         print(f.uri)
 

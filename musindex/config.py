@@ -12,30 +12,41 @@
 import os
 import configparser
 
-def get_config(section, item, typ):
-    '''get a config item according to config[section][item] and value type.'''
+CONF_FILE = '~/.musindex/musindex.conf'
+
+def get_config(opt, boolen=0):
+    '''get a config opt according to config[section][opt] and value type.'''
+    section = 'musindex repo'
     config = configparser.ConfigParser()
-    config.read('musindex.conf')
+    config.read(CONF_FILE)
     ret = None
-    if typ == 'int':
-        ret = config[section].getInt(item)
-    elif typ == 'float':
-        ret = config[section].getfloat(item)
-    elif typ == 'bool':
-        ret = config[section].getboolean(item)
+    if section not in config.sections():
+        ret = None
+    elif boolen != 0:
+        ret = config[section].getboolean(opt, False)
     else:
-        ret = config[section].get(item)
+        ret = config[section].get(opt, '')
     return ret
 
-def set_config(section, item, val):
-    '''set a config item according to config[section][item] and value.'''
+def set_config(opt, val):
+    '''set a config opt according to config[section][opt] and value.'''
+    section = 'musindex repo'
     config = configparser.ConfigParser()
-    config.read('musindex.conf')
-    config[section][item] = val
+    config.read(CONF_FILE)
+    if section not in config:
+        config[section] = {}
+    config[section][opt] = val
 
     with open(os.path.join(os.getcwd(), 'musindex.conf'), 'w') as conf:
         config.write(conf)
 
 def set_defconfig():
-    pass
+    set_config('dirs', '~/music:')
+    #set_config('db_conn', 'sqlite:///~/.musindex/musicrepo.db')
+    set_config('db_conn', 'sqlite:///:memory:')
+    set_config('loglevel', 'DEBUG')
+    set_config('logfile', '~/.musindex/musindex.log')
 
+def init():
+    if not os.path.isfile(CONF_FILE):
+        set_defconfig()

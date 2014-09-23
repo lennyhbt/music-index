@@ -9,8 +9,9 @@
     :license: LGPL, see LICENSE for more details.
 """
 
-import os
+import os, stat
 import mimetypes
+from musindex import db
 
 mimetypes.init()
 
@@ -30,10 +31,26 @@ class FileInfo(object):
         self.mimetype = mimetypes.guess_type(self.uri, strict=False)[0]
 
 
-def scan_dirs(path, opfunc):
+def scan_dirs(repo, opfunc):
     '''scan a dir path and do opfunc for every file in the dir.'''
-    for root, dirs, files in os.walk(path):
+    new_m = os.stat(repo)[stat.ST_MTIME]
+    last_m = 0
+    from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+    repo = os.path.abspath(repo)
+    dbs = db.SESSION()
+    try:
+        last_m = dbs.query(db.RepoInfo).filter(db.RepoInfo.path == repo).one().timestamp
+    except NoResultFound: # add this repo to db
+        new_repo = db.RepoInfo(path=repo, timestamp=new_m)
+        dbs.commit()
+    dbs.close()
+    if last_m >= new_m:
+        return
+    for root, dirs, files in os.walk(repo):
         for f in files:
+            new_m = os.stat(f)[stat.ST_MTIME]
+            if last_m >= new_m:
+                continue
             opfunc(FileInfo(os.path.join(root,f)))
 
 if __name__ == '__main__':
