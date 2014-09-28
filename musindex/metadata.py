@@ -25,11 +25,10 @@ except ImportError:
     import mutagenx
 
 class MusicFile(object):
-
     """" MusicFile contains audio metadata and file info. """
 
-    __slots__ = ('filetype', 'filename', 'metadata',
-                 'title', 'artist', 'album', 'genre', 'year')
+    #__slots__ = ('filetype', 'filename', 'metadata',
+    #             'title', 'artist', 'album', 'genre', 'year')
 
     __genre_code = {
         0: "Blues", 1: "Classic Rock", 2: "Country", 3: "Dance",
@@ -104,20 +103,25 @@ class MusicFile(object):
         elif 'mp4' in self.mimetype:
             self.filetype = 7
 
-        get_metadata()
+        try:
+            self.get_metadata()
+        except OSError:
+            pass
+        except:
+            pass
 
     def get_metadata(self):
         '''get all metadata from the music file.'''
         if USE_TAGLIB:
             self.__tagfile = taglib.File(self.filename)
             tags = self.__tagfile.tags
-            self.__title = tags.get('TITLE', self.def_title)
-            self.__artist = tags.get('ARTIST', self.def_artist)
-            self.__album = tags.get('ALBUM', self.def_album)
-            self.__genre = tags.get('GENRE', self.def_genre)
-            self.__year = tags.get('DATE', self.def_year)
+            self.__title = tags.get('TITLE', self.def_title)[0]
+            self.__artist = tags.get('ARTIST', self.def_artist)[0]
+            self.__album = tags.get('ALBUM', self.def_album)[0]
+            self.__genre = tags.get('GENRE', self.def_genre)[0]
+            self.__year = tags.get('DATE', self.def_year)[0]
         else:
-            self.__tagfile = mutagenx.File(self.filename).tags
+            self.__tagfile = mutagenx.File(self.filename)
             tags = self.__tagfile.tags
             self.__title = tags.get('TITLE')
             self.__artist = tags.get('ARTIST')

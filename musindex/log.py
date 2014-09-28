@@ -9,6 +9,7 @@
     :license: LGPL, see LICENSE for more details.
 """
 
+import os
 import logging
 
 from musindex import config
@@ -21,7 +22,7 @@ def log_config():
         "CRITICAL":logging.CRITICAL
     }
 
-    logfile = config.get_config('logfile')
+    logfile = os.path.abspath(os.path.expanduser(config.get_config('logfile')))
     if config.get_config('loglevel') not in level_dict:
         loglevel = level_dict['DEBUG']
     else:

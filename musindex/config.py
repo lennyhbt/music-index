@@ -12,7 +12,8 @@
 import os
 import configparser
 
-CONF_FILE = '~/.musindex/musindex.conf'
+CONF_PATH = os.path.expanduser('~/.musindex/')
+CONF_FILE = '{0}musindex.conf'.format(CONF_PATH)
 
 def get_config(opt, boolen=0):
     '''get a config opt according to config[section][opt] and value type.'''
@@ -37,7 +38,7 @@ def set_config(opt, val):
         config[section] = {}
     config[section][opt] = val
 
-    with open(os.path.join(os.getcwd(), 'musindex.conf'), 'w') as conf:
+    with open(CONF_FILE, 'w') as conf:
         config.write(conf)
 
 def set_defconfig():
@@ -48,5 +49,9 @@ def set_defconfig():
     set_config('logfile', '~/.musindex/musindex.log')
 
 def init():
+    if os.path.isdir(CONF_FILE):
+        os.rmdir(CONF_FILE)
+    if not os.path.exists(CONF_PATH):
+        os.makedirs(CONF_PATH)
     if not os.path.isfile(CONF_FILE):
         set_defconfig()

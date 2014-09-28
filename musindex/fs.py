@@ -33,6 +33,8 @@ class FileInfo(object):
 
 def scan_dirs(repo, opfunc):
     '''scan a dir path and do opfunc for every file in the dir.'''
+    if not os.path.exists(repo):
+        return
     new_m = os.stat(repo)[stat.ST_MTIME]
     last_m = 0
     from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
@@ -42,13 +44,14 @@ def scan_dirs(repo, opfunc):
         last_m = dbs.query(db.RepoInfo).filter(db.RepoInfo.path == repo).one().timestamp
     except NoResultFound: # add this repo to db
         new_repo = db.RepoInfo(path=repo, timestamp=new_m)
+        dbs.add(new_repo)
         dbs.commit()
     dbs.close()
     if last_m >= new_m:
         return
     for root, dirs, files in os.walk(repo):
         for f in files:
-            new_m = os.stat(f)[stat.ST_MTIME]
+            new_m = os.stat(os.path.join(root,f))[stat.ST_MTIME]
             if last_m >= new_m:
                 continue
             opfunc(FileInfo(os.path.join(root,f)))

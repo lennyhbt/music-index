@@ -39,11 +39,11 @@ class MusicFile(DBASE):
 
     id = Column(Integer, primary_key=True)
     filetype = Column(String)
-    uri = Column(String)
+    #uri = Column(String)
     path = Column(String)
-    basedir = Column(String)
+    #basedir = Column(String)
     filename = Column(String)
-    suffix = Column(String)
+    #suffix = Column(String)
     mimetype = Column(String)
 
     def __repr__(self):
@@ -78,7 +78,7 @@ class Song(DBASE):
     def __repr__(self):
         return '<Song(name={0})>'.format(self.name)
 
-class MsuicRefer(DBASE):
+class MusicRefer(DBASE):
     '''relation between file,song,artist and album'''
     __tablename__ = 'relate'
 
